@@ -9,4 +9,4 @@ typedef struct
 
 extern BLOCK block[4];
 extern void blockDisp();
-extern bool BlockDetection();
+extern bool BlockDetection(float* position);

@@ -19,9 +19,8 @@
 
 void update(int value)
 {
-	
-	glutForceJoystickFunc();	//ジョイスティック　判定　取りに行く指示　timerの中＝毎フレームごと
 
+	glutForceJoystickFunc();	//ジョイスティック　判定　取りに行く指示　timerの中＝毎フレームごと
 
 	if (input.DownKey == BUTTON_A)
 	{
@@ -32,20 +31,18 @@ void update(int value)
 	{
 		player.speed[0] = input.AnalogX / 60000.f;
 		player.position[0] += player.speed[0];
-		if (WallDetection(player.position))
+		if (WallDetection(player.position) || BlockDetection(player.position))
 		{
 			player.position[0] -= player.speed[0];
 		}
 	}
 	else player.speed[0] = 0;
 
-
-
 	if (input.AnalogY > 150 || input.AnalogY < -150)
 	{
 		player.speed[1] = input.AnalogY / 60000.f;
 		player.position[1] -= player.speed[1];
-		if (WallDetection(player.position))
+		if (WallDetection(player.position) || BlockDetection(player.position))
 		{
 			player.position[1] += player.speed[1];
 		}

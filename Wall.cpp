@@ -35,6 +35,7 @@ bool WallDetection(float* position)
 	else if (position[1] >= wallPackage_01[1].position[1] - 0.04) return true;
 	else if (position[0] >= wallPackage_01[2].position[0] - 0.04) return true;
 	else if ((position[0] <= wallPackage_01[3].position[0] + 0.04&&position[0] >= wallPackage_01[4].position[0] - 0.04) && position[1] <= wallPackage_01[4].position[1] + 0.04) return true;
+	else if (position[1] <= -1) return true;
 	return false;
 }
 

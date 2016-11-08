@@ -3,6 +3,8 @@
 #include "glut.h"
 #include "Bullet.h"
 #include "Enemy.h"
+#include "Block.h"
+#include "Wall.h"
 
 Bullet::Bullet() :shotAngle(player.angleDeg - 90), _speed(0.05f), _is_active(true), bullet({ 0 })
 {
@@ -42,12 +44,16 @@ void Bullet::move()
 	{
 		_is_active = false;
 	}
+	else if (WallDetection(bullet.position) || BlockDetection(bullet.position))
+	{
+		_is_active = false;
+	}
 	return;
 }
 
 void Bullet::bulletColision()
 {
-	
+
 	for (int i = 0; i < 3; i++)
 	{
 		if (enemy[i]._is_active == true)

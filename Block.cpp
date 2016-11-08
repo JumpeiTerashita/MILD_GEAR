@@ -13,24 +13,24 @@ typedef struct
 BLOCK block[] =
 {
 	{
-		{ -0.75,-0.77 },
+		{ -0.75f,-0.77f },
 		{ 0, 1, 0, 0 },
-		0.6
+		0.6f
 	},
 	{
-		{ -0.75,0.1 },
+		{ -0.75f,0.1f },
 		{ 0, 1, 0, 0 },
-		0.6
+		0.6f
 	},
 	{
-		{ 0.1,0.1 },
+		{ 0.1f,0.1f },
 		{ 0, 1, 0, 0 },
-		0.6
+		0.6f
 	},
 	{
-		{ 0.1,-0.77 },
+		{ 0.1f,-0.77f },
 		{ 0, 1, 0, 0 },
-		0.6
+		0.6f
 	},
 };
 
@@ -49,12 +49,17 @@ void blockDisp()
 	}
 }
 
-bool BlockDetection()
+bool BlockDetection(float* position)
 {
-
+	for (int i = 0; i < 4; i++)
 	{
-
+		if (
+			(block[i].position[0]<position[0] + 0.04 && block[i].position[0] + block[i].scale >position[0] - 0.04)
+			&& (block[i].position[1]<position[1] + 0.04 && block[i].position[1] + block[i].scale>position[1] - 0.04)
+			)
+		{
+			return true;
+		}
 	}
-
-	return true;
+	return false;
 }
