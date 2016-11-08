@@ -8,3 +8,5 @@ typedef struct
 }BLOCK;
 
 extern BLOCK block[4];
+extern void blockDisp();
+extern bool BlockDetection();

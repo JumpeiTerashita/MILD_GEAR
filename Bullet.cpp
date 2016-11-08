@@ -2,6 +2,7 @@
 #include <math.h>
 #include "glut.h"
 #include "Bullet.h"
+#include "Enemy.h"
 
 Bullet::Bullet() :shotAngle(player.angleDeg - 90), _speed(0.05f), _is_active(true), bullet({ 0 })
 {
@@ -66,3 +67,5 @@ void Bullet::bulletColision()
 
 	return;
 }
+
+Bullet* newbullet = nullptr;

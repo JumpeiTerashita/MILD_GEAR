@@ -17,5 +17,6 @@ public:
 };
 
 extern float shotAngleDeg;
+extern Bullet* newbullet;
 
 

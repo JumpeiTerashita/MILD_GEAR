@@ -25,4 +25,9 @@ typedef struct
 }OBJECT;
 
 extern INPUTMANAGER input;
-extern OBJECT player,enemy[3];
+extern OBJECT player;
+extern float playerAngleRad;
+extern void addVector(float* _vOut, float* _v0, float* _v1);
+extern void DrawString(const char* str);
+extern void DrawBits(int bits);
+extern void KeyDisp();

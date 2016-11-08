@@ -1,4 +1,7 @@
 #include "GameManager.h"
+#include "glut.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 INPUTMANAGER input = { 0 };
 
@@ -26,36 +29,75 @@ OBJECT player =
 	{1,1,1,0}
 };
 
-OBJECT enemy[] =
+void addVector(float* _vOut, float* _v0, float* _v1)
 {
+	for (int i = 0; i < 3; i++)
 	{
-		{ -0.5f,0,0 },
-		{ 1.f / 60,1.f / 60,0 },
-		0,
-		0.03,
-		180,
-		6,
-		{ 1, 0, 0, 1 },
-		true
-	},
+		_vOut[i] = _v0[i] + _v1[i];
+	}
+}
+
+void DrawString(const char* str)
+{
+	while (*str != '\0')
 	{
-		{ 0.5f,0,0 },
-		{ 0.5f / 60,0.5f / 60,0 },
-		0,
-		0.03,
-		180,
-		6,
-		{ 0, 1, 0, 1 },
-		true
-	},
+		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *str++);
+	}
+}
+
+void DrawBits(int bits)
+{
+	int bitsBox[8] = { 0 };
+	int bits_copy = bits;
+	for (int i = 0; bits_copy > 0; i++)
 	{
-		{ -0.5f,0.5f,0 },
-		{ 1.f / 60,1.f / 60,0 },
-		0,
-		0.03,
-		180,
-		6,
-		{ 0, 0, 1, 1 },
-		true
-	},
-};
+		bitsBox[i] = bits_copy % 2;
+		bits_copy = bits_copy / 2;
+
+	}
+	for (int n = 7; n >= 0; n--)
+	{
+		switch (bitsBox[n])
+		{
+		case 0:
+			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, '0');
+			break;
+		case 1:
+			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, '1');
+			break;
+		}
+	}
+
+}
+
+void KeyDisp()
+{
+	glPushMatrix();
+	{
+		glRasterPos2f(-1, 0);
+		DrawString("PressedKey :");
+		DrawBits(input.PressedKey);
+		glRasterPos2f(-1, -0.1);
+		DrawString("ReleasedKey:");
+		DrawBits(input.ReleasedKey);
+		glRasterPos2f(-1, -0.2);
+		DrawString("LastKey    :");
+		DrawBits(input.LastKey);
+		glRasterPos2f(-1, -0.3);
+		DrawString("ChangedKey :");
+		DrawBits(input.ChangedKey);
+		glRasterPos2f(-1, -0.4);
+		DrawString("UpKey      :");
+		DrawBits(input.UpKey);
+		glRasterPos2f(-1, -0.5);
+		DrawString("DownKey    :");
+		DrawBits(input.DownKey);
+	}
+	glPopMatrix();
+
+
+	return;
+}
+
+
+float playerAngleRad = 0;

@@ -15,178 +15,11 @@
 #include "Bullet.h"
 #include "Block.h"
 #include "Wall.h"
-
-Bullet* newbullet = nullptr;
-
-float tmpSpeed[2] = { 0 };
-float playerAngleRad = 0;
-
-void addVector(float* _vOut, float* _v0, float* _v1)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		_vOut[i] = _v0[i] + _v1[i];
-	}
-}
-
-void enemyDisp()
-{
-	enemy[1].angleDeg = atan2f(enemy[1].speed[0], enemy[1].speed[1]) * 180 / M_PI;
-
-	glBegin(GL_TRIANGLE_FAN);	// 視界（扇形）
-	glColor4f(0, 1, 1, 0);
-	glVertex3f(enemy[1].position[0], enemy[1].position[1], 0.0);	// GLfloat x, y, z
-	for (int i = 0; i <= 3; i++)
-	{
-		float x = enemy[1].position[0] + 0.25*cosf(M_PI* i / 16 + enemy[1].angleDeg);
-		float y = enemy[1].position[1] + 0.25*sinf(M_PI* i / 16 + enemy[1].angleDeg);
-		glVertex3f(x, y, 0);
-	}
-	glEnd();	//ここまで
-	int ballMax = 3;
-
-	for (int i = 0; i < ballMax; i++)
-	{
-
-		if (enemy[i]._is_active == true)
-		{
-
-			glPushMatrix();
-			{
-				addVector(enemy[i].position, enemy[i].position, enemy[i].speed);
-				glColor4f(enemy[i].colorStatus[0], enemy[i].colorStatus[1], enemy[i].colorStatus[2], enemy[i].colorStatus[3]);
-				glTranslatef(enemy[i].position[0], enemy[i].position[1], enemy[i].position[2]);
-				glutSolidSphere(enemy[i].radius, enemy[i].slices, enemy[i].stacks);
-			}
-			glPopMatrix();
-		}
-	}
-}
-
-void collisionDetection()
-{
-	for (int i = 0; i < 3; i++)
-	{
-		for (int n = 0; n < 3; n++)
-		{
-			if (enemy[i].position[n] <= -1 + enemy[i].radius || enemy[i].position[n] >= 1 - enemy[i].radius)
-			{
-				enemy[i].speed[n] = -enemy[i].speed[n];
-			}
-		}
-	}
-
-	int ballMax = 3;
-	for (int first = 0; first < ballMax; first++)
-	{
-		for (int second = first + 1; second < ballMax; second++)
-		{
-			if (!enemy[first]._is_active) continue;
-			if (!enemy[second]._is_active) continue;
-			float x = enemy[first].position[0] - enemy[second].position[0];
-			float x2 = powf(x, 2.0);
-			float y = enemy[first].position[1] - enemy[second].position[1];
-			float y2 = powf(y, 2.0);
-			float r2 = powf(enemy[first].radius, 2.0);
-
-			if (r2 * 2 >= (x2 + y2))
-			{
-				for (int i = 0; i < 3; i++)
-				{
-					enemy[first].speed[i] = -enemy[first].speed[i];
-					enemy[second].speed[i] = -enemy[second].speed[i];
-					/*	ball[first].colorStatus[i] = (rand() % 5) *0.1f + 0.5f;
-					ball[second].colorStatus[i] = (rand() % 10) *0.1f + 0.5f;*/
-				}
-			}
-		}
-	}
-}
-
-void DrawString(const char* str)
-{
-	while (*str != '\0')
-	{
-		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *str++);
-	}
-}
-
-void DrawBits(int bits)
-{
-	int bitsBox[8] = { 0 };
-	int bits_copy = bits;
-	for (int i = 0; bits_copy > 0; i++)
-	{
-		bitsBox[i] = bits_copy % 2;
-		bits_copy = bits_copy / 2;
-
-	}
-	for (int n = 7; n >= 0; n--)
-	{
-		switch (bitsBox[n])
-		{
-		case 0:
-			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, '0');
-			break;
-		case 1:
-			glutBitmapCharacter(GLUT_BITMAP_9_BY_15, '1');
-			break;
-		}
-	}
-
-}
-
-void KeyDisp()
-{
-	glPushMatrix();
-	{
-		glRasterPos2f(-1, 0);
-		DrawString("PressedKey :");
-		DrawBits(input.PressedKey);
-		glRasterPos2f(-1, -0.1);
-		DrawString("ReleasedKey:");
-		DrawBits(input.ReleasedKey);
-		glRasterPos2f(-1, -0.2);
-		DrawString("LastKey    :");
-		DrawBits(input.LastKey);
-		glRasterPos2f(-1, -0.3);
-		DrawString("ChangedKey :");
-		DrawBits(input.ChangedKey);
-		glRasterPos2f(-1, -0.4);
-		DrawString("UpKey      :");
-		DrawBits(input.UpKey);
-		glRasterPos2f(-1, -0.5);
-		DrawString("DownKey    :");
-		DrawBits(input.DownKey);
-	}
-	glPopMatrix();
-
-
-	return;
-}
-
-bool WallDetection(float* position)
-{
-	if (position[0] <= wallPackage_01[0].position[0]+0.04) return true;
-	else if (position[1] >= wallPackage_01[1].position[1]-0.04) return true;
-	else if (position[0] >= wallPackage_01[2].position[0]-0.04) return true;
-	else if ((position[0] <= wallPackage_01[3].position[0]+0.04&&position[0] >= wallPackage_01[4].position[0]-0.04) && position[1] <= wallPackage_01[4].position[1]+0.04) return true;
-	return false;
-}
-
-bool BlockDetection()
-{
-
-	{
-
-	}
-
-	return true;
-}
+#include "Enemy.h"
 
 void update(int value)
 {
-
+	
 	glutForceJoystickFunc();	//ジョイスティック　判定　取りに行く指示　timerの中＝毎フレームごと
 
 
@@ -226,8 +59,6 @@ void update(int value)
 
 	player.angleDeg = playerAngleRad * 180 / M_PI;
 
-	tmpSpeed[0] = player.speed[0];
-	tmpSpeed[1] = player.speed[1];
 
 	glutPostRedisplay(); //display関数の再呼び出し
 	glutTimerFunc(
@@ -235,31 +66,6 @@ void update(int value)
 		update,  //呼び出す関数指定
 		0		//呼び出す関数の引数指定
 	);
-}
-
-void stageDisp() {
-	glBegin(GL_LINE_STRIP);	// マップデータ 地形
-	glColor4f(0, 1, 0, 0);
-	glVertex3f(-0.9, -1, 0.0);	// GLfloat x, y, z
-	glVertex3f(-0.9, 0.9, 0.0);	// GLfloat x, y, z
-	glVertex3f(0.9, 0.9, 0.0);	// GLfloat x, y, z
-	glVertex3f(0.9, -0.9, 0.0);	// GLfloat x, y, z
-	glVertex3f(-0.75, -0.9, 0.0);
-	glVertex3f(-0.75, -1, 0.0);
-	glEnd();	//ここまで
-
-	for (int i = 0; i < 4; i++)
-	{
-		glBegin(GL_LINE_STRIP);	// マップデータ　ブロック（左下）
-		glColor4f(block[i].colorStatus[0], block[i].colorStatus[1], block[i].colorStatus[2], block[i].colorStatus[3]);
-		glVertex3f(block[i].position[0], block[i].position[1], 0.0);	// GLfloat x, y, z
-		glVertex3f(block[i].position[0], block[i].position[1] + block[i].scale, 0.0);
-		glVertex3f(block[i].position[0] + block[i].scale, block[i].position[1] + block[i].scale, 0.0);
-		glVertex3f(block[i].position[0] + block[i].scale, block[i].position[1], 0.0);
-		glVertex3f(block[i].position[0], block[i].position[1], 0.0);
-		glEnd();	//ここまで
-	}
-
 }
 
 void display()
@@ -270,6 +76,7 @@ void display()
 	//KeyDisp();
 
 	stageDisp();
+	blockDisp();
 
 	if (!(newbullet == nullptr))
 	{
@@ -318,8 +125,6 @@ void JoyStick(unsigned int buttonMask, int x, int y, int z)
 	input.UpKey = (input.ChangedKey & input.ReleasedKey);
 	input.DownKey = (input.ChangedKey & input.PressedKey);
 }
-
-
 
 int main(int argc, char *argv[])
 {
