@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <stdio.h>
 #include "GameManager.h"
 #include "glut.h"
 #include "Enemy.h"
@@ -40,22 +41,33 @@ OBJECT enemy[] =
 
 void enemyDisp()
 {
-	enemy[1].angleDeg = atan2f(enemy[1].speed[0], enemy[1].speed[1]) * 180 / M_PI;
-
-	glBegin(GL_TRIANGLE_FAN);	// 視界（扇形）
-	glColor4f(0, 1, 1, 0.5);
-	glVertex3f(enemy[1].position[0], enemy[1].position[1], 0.0);	// GLfloat x, y, z
-	for (int i = 0; i <= 3; i++)
+	const int enemyMax = 3;
+	
+	
+	
+	
+	//視界表示
+	for (int n = 0; n < enemyMax; n++)
 	{
-		float x = enemy[1].position[0] + 0.25*cosf(M_PI* i / 16 + enemy[1].angleDeg);
-		float y = enemy[1].position[1] + 0.25*sinf(M_PI* i / 16 + enemy[1].angleDeg);
-		glVertex3f(x, y, 0);
+		enemy[n].angleDeg = atan2f(enemy[n].speed[0], enemy[n].speed[1]) * 180 / M_PI;
+		//printf("\r%f\n", enemy[1].angleDeg);
+		glBegin(GL_TRIANGLE_FAN);	// 視界（扇形）
+		glColor4f(0, 1, 1, 0.5);
+		glVertex3f(enemy[n].position[0], enemy[n].position[1], 0.0);	// GLfloat x, y, z
+		for (int i = 0; i <= 3; i++)
+		{
+			float x = enemy[n].position[0] + 0.25*cosf(M_PI* i / 16 + enemy[n].angleDeg);
+			float y = enemy[n].position[1] + 0.25*sinf(M_PI* i / 16 + enemy[n].angleDeg);
+			glVertex3f(x, y, 0);
+		}
+		glEnd();	//ここまで
 	}
-	glEnd();	//ここまで
+	
+	
 
-	int ballMax = 3;
+	
 
-	for (int i = 0; i < ballMax; i++)
+	for (int i = 0; i < enemyMax; i++)
 	{
 
 		if (enemy[i]._is_active == true)
@@ -71,6 +83,8 @@ void enemyDisp()
 			glPopMatrix();
 		}
 	}
+	
+	
 }
 
 void collisionDetection()
@@ -112,3 +126,5 @@ void collisionDetection()
 		}
 	}
 }
+
+void enemyMove();
