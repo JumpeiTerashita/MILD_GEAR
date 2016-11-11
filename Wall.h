@@ -7,5 +7,6 @@ typedef struct
 }WALL;
 
 extern WALL wallPackage_01[6];
-extern bool WallDetection(float* position);
+extern bool WallDetection_player(float* position);
+extern bool WallDetection_bullet(float* position);
 extern void stageDisp();

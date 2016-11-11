@@ -16,7 +16,7 @@ typedef struct
 {
 	float position[3];
 	float speed[3];
-	float angleDeg;
+	float angleRad;
 	double radius;
 	int slices;
 	int stacks;

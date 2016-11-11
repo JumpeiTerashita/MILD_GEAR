@@ -49,13 +49,28 @@ void blockDisp()
 	}
 }
 
-bool BlockDetection(float* position)
+bool BlockDetection_player(float* position)
 {
 	for (int i = 0; i < 4; i++)
 	{
 		if (
 			(block[i].position[0]<position[0] + 0.04 && block[i].position[0] + block[i].scale >position[0] - 0.04)
 			&& (block[i].position[1]<position[1] + 0.04 && block[i].position[1] + block[i].scale>position[1] - 0.04)
+			)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BlockDetection_bullet(float* position)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (
+			(block[i].position[0]<position[0]&& block[i].position[0] + block[i].scale >position[0])
+			&& (block[i].position[1]<position[1]&& block[i].position[1] + block[i].scale>position[1])
 			)
 		{
 			return true;

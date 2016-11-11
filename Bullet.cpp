@@ -6,7 +6,7 @@
 #include "Block.h"
 #include "Wall.h"
 
-Bullet::Bullet() :shotAngle(player.angleDeg - 90), _speed(0.05f), _is_active(true), bullet({ 0 })
+Bullet::Bullet() :shotAngle(player.angleRad - 90), _speed(0.05f), _is_active(true), bullet({ 0 })
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -44,7 +44,7 @@ void Bullet::move()
 	{
 		_is_active = false;
 	}
-	else if (WallDetection(bullet.position) || BlockDetection(bullet.position))
+	else if (WallDetection_bullet(bullet.position) || BlockDetection_bullet(bullet.position))
 	{
 		_is_active = false;
 	}

@@ -29,12 +29,22 @@ WALL wallPackage_01[6] =
 	}
 };
 
-bool WallDetection(float* position)
+bool WallDetection_player(float* position)
 {
 	if (position[0] <= wallPackage_01[0].position[0] + 0.04) return true;
 	else if (position[1] >= wallPackage_01[1].position[1] - 0.04) return true;
 	else if (position[0] >= wallPackage_01[2].position[0] - 0.04) return true;
 	else if ((position[0] <= wallPackage_01[3].position[0] + 0.04&&position[0] >= wallPackage_01[4].position[0] - 0.04) && position[1] <= wallPackage_01[4].position[1] + 0.04) return true;
+	else if (position[1] <= -1) return true;
+	return false;
+}
+
+bool WallDetection_bullet(float* position)
+{
+	if (position[0] <= wallPackage_01[0].position[0]) return true;
+	else if (position[1] >= wallPackage_01[1].position[1]) return true;
+	else if (position[0] >= wallPackage_01[2].position[0]) return true;
+	else if ((position[0] <= wallPackage_01[3].position[0] &&position[0] >= wallPackage_01[4].position[0]) && position[1] <= wallPackage_01[4].position[1]) return true;
 	else if (position[1] <= -1) return true;
 	return false;
 }

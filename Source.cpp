@@ -31,7 +31,7 @@ void update(int value)
 	{
 		player.speed[0] = input.AnalogX / 60000.f;
 		player.position[0] += player.speed[0];
-		if (WallDetection(player.position) || BlockDetection(player.position))
+		if (WallDetection_player(player.position) || BlockDetection_player(player.position))
 		{
 			player.position[0] -= player.speed[0];
 		}
@@ -42,7 +42,7 @@ void update(int value)
 	{
 		player.speed[1] = input.AnalogY / 60000.f;
 		player.position[1] -= player.speed[1];
-		if (WallDetection(player.position) || BlockDetection(player.position))
+		if (WallDetection_player(player.position) || BlockDetection_player(player.position))
 		{
 			player.position[1] += player.speed[1];
 		}
@@ -54,7 +54,7 @@ void update(int value)
 		playerAngleRad = atan2f(player.speed[0], -player.speed[1]);
 	}
 
-	player.angleDeg = playerAngleRad * 180 / M_PI;
+	player.angleRad = playerAngleRad * 180 / M_PI;
 
 
 	glutPostRedisplay(); //displayä÷êîÇÃçƒåƒÇ—èoÇµ
@@ -98,7 +98,7 @@ void display()
 
 		glTranslatef(player.position[0], player.position[1], player.position[2]);
 		glRotatef(-90, 1, 0, 0);
-		glRotatef(player.angleDeg, 0, 1, 0);
+		glRotatef(player.angleRad, 0, 1, 0);
 		glColor4f(player.colorStatus[0], player.colorStatus[1], player.colorStatus[2], player.colorStatus[3]);
 		//glutSolidSphere(player.radius, player.slices, player.stacks);
 		glutSolidCone(0.020, 0.050, player.slices, player.stacks);
