@@ -18,48 +18,96 @@ bool _is_active;
 }OBJECT;
 */
 
-OBJECT enemy[] =
+enum
+{
+	ENEMY_CAMERA_01,
+	ENEMY_CAMERA_02,
+	ENEMY_CAMERA_03,
+	ENEMY_CAMERA_04,
+	ENEMY_SOLDIER_01,
+	ENEMY_SOLDIER_02,
+	ENEMY_SOLDIER_03
+};
+
+OBJECT enemy[7] =
 {
 	{
 		{ -0.75f,-0.17f,0 },
-		{ 1.f / 60,1.f / 60,0 },
-		0,
-		0.01,
+		{ 0,0,0 },
+		60 * 3.14159265358f / 180.f,
+		0.01f,
 		180,
 		6,
 		{ 1, 0, 0, 1 },
 		true
 	},
 	{
-		{ 0.5f,0,0 },
-		{ 0.5f / 60,0.5f / 60,0 },
-		0,
-		0.03,
+		{ -0.15f,0.1f,0 },
+		{ 0,0,0 },
+		15 * 3.14159265358f / 180.f,
+		0.01f,
 		180,
 		6,
-		{ 0, 1, 0, 1 },
+		{ 1, 0, 0, 1 },
 		true
 	},
 	{
 		{ -0.5f,0.5f,0 },
-		{ 1.f / 60,1.f / 60,0 },
-		0,
-		0.03,
+		{ 0,0,0 },
+		0 * 3.14159265358f / 180.f,
+		0.01f,
 		180,
 		6,
-		{ 0, 0, 1, 1 },
+		{ 1, 0, 0, 1 },
+		true
+	},
+	{
+		{ -0.5f,0.5f,0 },
+		{ 0,0,0 },
+		0 * 3.14159265358f / 180.f,
+		0.01f,
+		180,
+		6,
+		{ 1, 0, 0, 1 },
+		true
+	},
+	{
+		{ -0.5f,0.5f,0 },
+		{ 0,0,0 },
+		0 * 3.14159265358f / 180.f,
+		0.01f,
+		180,
+		6,
+		{ 1, 0, 0, 1 },
+		true
+	},
+	{
+		{ -0.5f,0.5f,0 },
+		{ 0,0,0 },
+		0 * 3.14159265358f / 180.f,
+		0.01f,
+		180,
+		6,
+		{ 1, 0, 0, 1 },
+		true
+	},
+	{
+		{ -0.5f,0.5f,0 },
+		{ 0,0,0 },
+		0 * 3.14159265358f / 180.f,
+		0.01f,
+		180,
+		6,
+		{ 1, 0, 0, 1 },
 		true
 	},
 };
 
-int enemyState[3] = { 0 };
+int enemyState[7] = { 0 };
 
 void enemyDisp()
 {
-	const int enemyMax = 3;
-
-
-
+	const int enemyMax = 7;
 
 	//Ž‹ŠE•\Ž¦
 	for (int n = 0; n < enemyMax; n++)
@@ -68,7 +116,10 @@ void enemyDisp()
 		{
 			//printf("\r%f\n", enemy[1].angleDeg);
 			glBegin(GL_TRIANGLE_FAN);	// Ž‹ŠEiîŒ`j
-			if (enemySightColision(n)) glColor4f(1, 0, 0, 0.5);
+			if (enemySightColision(n))
+			{
+				glColor4f(1, 0, 0, 0.5);
+			}
 			else glColor4f(0, 1, 1, 0.5);
 			glVertex3f(enemy[n].position[0], enemy[n].position[1], 0.0);	// GLfloat x, y, z
 			for (int i = 0; i <= 3; i++)
@@ -79,7 +130,7 @@ void enemyDisp()
 			}
 			glEnd();	//‚±‚±‚Ü‚Å
 		}
-		
+
 	}
 
 
@@ -91,10 +142,13 @@ void enemyDisp()
 
 		if (enemy[i]._is_active == true)
 		{
-			enemyMove(i);
+			if (GameState != SCENE_GAMEOVER&&GameState != SCENE_GAMECLEAR)
+			{
+				enemyMove(i);
+				addVector(enemy[i].position, enemy[i].position, enemy[i].speed);
+			}
 			glPushMatrix();
 			{
-				//addVector(enemy[i].position, enemy[i].position, enemy[i].speed);
 				glColor4f(enemy[i].colorStatus[0], enemy[i].colorStatus[1], enemy[i].colorStatus[2], enemy[i].colorStatus[3]);
 				glTranslatef(enemy[i].position[0], enemy[i].position[1], enemy[i].position[2]);
 				glutSolidSphere(enemy[i].radius, enemy[i].slices, enemy[i].stacks);
@@ -106,63 +160,119 @@ void enemyDisp()
 
 }
 
-void collisionDetection()
-{
-	for (int i = 0; i < 3; i++)
-	{
-		for (int n = 0; n < 3; n++)
-		{
-			if (enemy[i].position[n] <= -1 + enemy[i].radius || enemy[i].position[n] >= 1 - enemy[i].radius)
-			{
-				enemy[i].speed[n] = -enemy[i].speed[n];
-			}
-		}
-	}
-
-	int ballMax = 3;
-	for (int first = 0; first < ballMax; first++)
-	{
-		for (int second = first + 1; second < ballMax; second++)
-		{
-			if (!enemy[first]._is_active) continue;
-			if (!enemy[second]._is_active) continue;
-			float x = enemy[first].position[0] - enemy[second].position[0];
-			float x2 = powf(x, 2.0);
-			float y = enemy[first].position[1] - enemy[second].position[1];
-			float y2 = powf(y, 2.0);
-			float r2 = powf(enemy[first].radius, 2.0);
-
-			if (r2 * 2 >= (x2 + y2))
-			{
-				for (int i = 0; i < 3; i++)
-				{
-					enemy[first].speed[i] = -enemy[first].speed[i];
-					enemy[second].speed[i] = -enemy[second].speed[i];
-					/*	ball[first].colorStatus[i] = (rand() % 5) *0.1f + 0.5f;
-					ball[second].colorStatus[i] = (rand() % 10) *0.1f + 0.5f;*/
-				}
-			}
-		}
-	}
-}
-
 void enemyMove(int enemy_number)
 {
 	float enemyAngleDeg = enemy[enemy_number].angleRad * 180 / M_PI;
 
-	enemySightColision(enemy_number);
+	if (enemySightColision(enemy_number))
+	{
+		GameState = SCENE_GAMEOVER;
+	}
+
 	switch (enemy_number)
 	{
-	case 0:
+	case ENEMY_CAMERA_01:
 		switch (enemyState[enemy_number])
 		{
 		case 0:
 			enemyAngleDeg += 0.25f;
-			if (enemyAngleDeg >= 210) enemyState[enemy_number] = 1;
+			if (enemyAngleDeg >= 165) enemyState[enemy_number] = 1;
 			break;
 		case 1:
 			enemyAngleDeg -= 0.25f;
-			if (enemyAngleDeg <= 0) enemyState[enemy_number] = 0;
+			if (enemyAngleDeg <= 60) enemyState[enemy_number] = 0;
+			break;
+		}
+		enemy[enemy_number].angleRad = enemyAngleDeg*M_PI / 180;
+		break;
+	case ENEMY_CAMERA_02:
+		switch (enemyState[enemy_number])
+		{
+		case 0:
+			enemyAngleDeg -= 0.25f;
+			if (enemyAngleDeg <= -105) enemyState[enemy_number] = 1;
+			break;
+		case 1:
+			enemyAngleDeg += 0.25f;
+			if (enemyAngleDeg >= -15) enemyState[enemy_number] = 0;
+			break;
+		}
+		enemy[enemy_number].angleRad = enemyAngleDeg*M_PI / 180;
+		break;
+	case ENEMY_CAMERA_03:
+		switch (enemyState[enemy_number])
+		{
+		case 0:
+			enemyAngleDeg += 0.2f;
+			if (enemyAngleDeg >= -30) enemyState[enemy_number] = 1;
+			break;
+		case 1:
+			enemyAngleDeg -= 0.2f;
+			if (enemyAngleDeg <= -90) enemyState[enemy_number] = 0;
+			break;
+		}
+		enemy[enemy_number].angleRad = enemyAngleDeg*M_PI / 180;
+		break;
+	case ENEMY_CAMERA_04:
+		switch (enemyState[enemy_number])
+		{
+		case 0:
+			enemyAngleDeg += 0.18f;
+			if (enemyAngleDeg >= -15) enemyState[enemy_number] = 1;
+			break;
+		case 1:
+			enemyAngleDeg -= 0.18f;
+			if (enemyAngleDeg <= -105) enemyState[enemy_number] = 0;
+			break;
+		}
+		enemy[enemy_number].angleRad = enemyAngleDeg*M_PI / 180;
+		break;
+	case ENEMY_SOLDIER_01:
+		switch (enemyState[enemy_number])
+		{
+		case 0:
+			enemy[enemy_number].speed[0] = -0.0015f;
+			if (enemy[enemy_number].position[0] <= -0.74f)
+			{
+				enemy[enemy_number].speed[0] = 0;
+				enemyState[enemy_number] = 1;
+			}
+			break;
+		case 1:
+			enemyAngleDeg /= 1.01f;
+			if (enemyAngleDeg <= 70) enemyState[enemy_number] = 2;
+			break;
+		case 2:
+			enemyAngleDeg *= 1.01f;
+			if (enemyAngleDeg >= 255) enemyState[enemy_number] = 3;
+			break;
+		case 3:
+			enemyAngleDeg -= 5.03f;
+			if (enemyAngleDeg <= -15) enemyState[enemy_number] = 4;
+			break;
+		case 4:
+			enemy[enemy_number].speed[0] = 0.0015f;
+			if (enemy[enemy_number].position[0] >= 0.78f)
+			{
+				enemy[enemy_number].speed[0] = 0;
+				enemyState[enemy_number] = 5;
+			}
+			break;
+		case 5:
+			enemyAngleDeg -= 1.01f;
+			if (enemyAngleDeg <= -115) enemyState[enemy_number] = 6;
+			break;
+		case 6:
+			enemyAngleDeg += 1.01f;
+			if (enemyAngleDeg >= 75) enemyState[enemy_number] = 7;
+			break;
+		case 7:
+			enemyAngleDeg -= 5.11f;
+			if (enemyAngleDeg <= -195)
+			{
+				enemyState[enemy_number] = 0;
+				enemyAngleDeg = 165;
+			}
 			break;
 		}
 		enemy[enemy_number].angleRad = enemyAngleDeg*M_PI / 180;

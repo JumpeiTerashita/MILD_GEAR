@@ -24,14 +24,19 @@ void update(int value)
 	glutForceJoystickFunc();	//ジョイスティック　判定　取りに行く指示　timerの中＝毎フレームごと
 	switch (GameState)
 	{
-	case 0:
+	case SCENE_TITLE:
+		if (input.DownKey != 0)
+		{
+			statusInit();
+			GameState++;
+			
+		}
 		break;
-	case 1:
+	case SCENE_GAMEPLAY:
 		if (input.DownKey == BUTTON_A)
 		{
 			newbullet = new Bullet();
 		}
-
 		if (input.AnalogX > 150 || input.AnalogX < -150)
 		{
 			player.speed[0] = input.AnalogX / 60000.f;
@@ -41,7 +46,6 @@ void update(int value)
 			}
 		}
 		else player.speed[0] = 0;
-
 		if (input.AnalogY > 150 || input.AnalogY < -150)
 		{
 			player.speed[1] = input.AnalogY / 60000.f;
@@ -51,22 +55,19 @@ void update(int value)
 			}
 		}
 		else player.speed[1] = 0;
-
 		if (!(player.speed[0] == 0 && player.speed[1] == 0))
 		{
 			playerAngleRad = atan2f(player.speed[0], -player.speed[1]);
 		}
-
 		player.angleRad = playerAngleRad * 180 / M_PI;
-
 		FileGet(player.position);
-
+		break;
+	case SCENE_GAMEOVER:
+	case SCENE_GAMECLEAR:
+		if (input.DownKey != 0) GameState = SCENE_TITLE;
 		break;
 	}
 	
-
-	
-
 	glutPostRedisplay(); //display関数の再呼び出し
 	glutTimerFunc(
 		16,   // unsigned int ミリ秒
@@ -77,23 +78,15 @@ void update(int value)
 
 void display()
 {
-
 	glClear(GL_COLOR_BUFFER_BIT);//クリア（色情報） 残像出なくなる
 	glLoadIdentity(); //注文・変換等の初期化　（再描画ごとの重ねがけを無効化できる）
 	//KeyDisp();
-
 	switch (GameState)
 	{
-	case 0:
+	case SCENE_TITLE:
 		titleDisp();
 		break;
-	case 1:
-		ItemStatusDisp();
-		stageDisp();
-		blockDisp();
-		GateDisp();
-		XFileDisp();
-
+	case SCENE_GAMEOVER:
 		if (!(newbullet == nullptr))
 		{
 			newbullet->move();
@@ -104,14 +97,50 @@ void display()
 				delete newbullet;
 			}
 		}
+
+		ItemStatusDisp();
+		stageDisp();
+		blockDisp();
+		GateDisp();
+		XFileDisp();
 		enemyDisp();
-		collisionDetection();
+		glPushMatrix();
+		{
+			glTranslatef(player.position[0], player.position[1], player.position[2]);
+			glRotatef(-90, 1, 0, 0);
+			glRotatef(player.angleRad, 0, 1, 0);
+			glColor4f(player.colorStatus[0], player.colorStatus[1], player.colorStatus[2], player.colorStatus[3]);
+			//glutSolidSphere(player.radius, player.slices, player.stacks);
+			glutSolidCone(0.020, 0.050, player.slices, player.stacks);
+		}
+		glPopMatrix();
+		gameOver();
+		break;
+	case SCENE_GAMEPLAY:
+	case SCENE_GAMECLEAR:
+		if (!(newbullet == nullptr))
+		{
+			newbullet->move();
+			newbullet->bulletColision();
+			if (newbullet->_is_active == false)
+			{
+				newbullet = nullptr;
+				delete newbullet;
+			}
+		}
+
+		ItemStatusDisp();
+		stageDisp();
+		blockDisp();
+		GateDisp();
+		XFileDisp();
+		enemyDisp();
+
 
 		if (!(newbullet == nullptr))
 		{
 			newbullet->draw();
 		}
-
 		glPushMatrix();
 		{
 			glTranslatef(player.position[0], player.position[1], player.position[2]);
@@ -123,11 +152,9 @@ void display()
 		}
 		glPopMatrix();
 
-		gameClear(player.position);
+		gameClear();
 		break;
 	}
-	
-
 	glFlush();			//注文したものを持ってくる
 }
 
