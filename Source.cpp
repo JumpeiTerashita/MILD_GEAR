@@ -16,6 +16,7 @@
 #include "Block.h"
 #include "Wall.h"
 #include "Enemy.h"
+#include "BlockGate.h"
 
 void update(int value)
 {
@@ -72,8 +73,10 @@ void display()
 	glLoadIdentity(); //注文・変換等の初期化　（再描画ごとの重ねがけを無効化できる）
 	//KeyDisp();
 
+	
 	stageDisp();
 	blockDisp();
+	GateDisp();
 
 	if (!(newbullet == nullptr))
 	{

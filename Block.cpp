@@ -1,5 +1,6 @@
-#include "Block.h"
 #include "glut.h"
+#include "Block.h"
+#include "BlockGate.h"
 
 /*
 typedef struct
