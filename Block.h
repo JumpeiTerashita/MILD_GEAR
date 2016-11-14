@@ -9,5 +9,6 @@ typedef struct
 
 extern BLOCK block[4];
 extern void blockDisp();
-extern bool BlockDetection_player(float* position);
+extern bool BlockDetection_playerX(float* position);
+extern bool BlockDetection_playerY(float* position);
 extern bool BlockDetection_bullet(float* position);

@@ -26,8 +26,12 @@ typedef struct
 
 extern INPUTMANAGER input;
 extern OBJECT player;
+extern bool ClearFlag;
 extern float playerAngleRad;
+extern int GameState;
 extern void addVector(float* _vOut, float* _v0, float* _v1);
 extern void DrawString(const char* str);
 extern void DrawBits(int bits);
 extern void KeyDisp();
+extern void gameClear(float* position);
+extern void titleDisp();

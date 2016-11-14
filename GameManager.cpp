@@ -1,7 +1,8 @@
+#include <math.h>
+#include <stdio.h>
 #include "GameManager.h"
 #include "glut.h"
 #define _USE_MATH_DEFINES
-#include <math.h>
 
 INPUTMANAGER input = { 0 };
 
@@ -41,7 +42,7 @@ void DrawString(const char* str)
 {
 	while (*str != '\0')
 	{
-		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *str++);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *str++);
 	}
 }
 
@@ -99,5 +100,28 @@ void KeyDisp()
 	return;
 }
 
-
+int GameState = 1;
 float playerAngleRad = 0;
+bool ClearFlag = false;
+
+void gameClear(float* position)
+{
+	if (ClearFlag==true&&position[1]<=-0.9)
+	{
+		glPushMatrix();
+		{
+			glRasterPos2f(-0.2, -0.05);
+			DrawString("GAME CLEAR !");
+		}
+		glPopMatrix();
+		
+	}
+	return;
+}
+
+void titleDisp()
+{
+	glRasterPos2f(-0.2, -0.05);
+	DrawString("MILD GEAR");
+}
+

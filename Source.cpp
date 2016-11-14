@@ -17,46 +17,55 @@
 #include "Wall.h"
 #include "Enemy.h"
 #include "BlockGate.h"
+#include "Item.h"
 
 void update(int value)
 {
-
 	glutForceJoystickFunc();	//ジョイスティック　判定　取りに行く指示　timerの中＝毎フレームごと
-
-	if (input.DownKey == BUTTON_A)
+	switch (GameState)
 	{
-		newbullet = new Bullet();
-	}
-
-	if (input.AnalogX > 150 || input.AnalogX < -150)
-	{
-		player.speed[0] = input.AnalogX / 60000.f;
-		player.position[0] += player.speed[0];
-		if (WallDetection_player(player.position) || BlockDetection_player(player.position))
+	case 0:
+		break;
+	case 1:
+		if (input.DownKey == BUTTON_A)
 		{
-			player.position[0] -= player.speed[0];
+			newbullet = new Bullet();
 		}
-	}
-	else player.speed[0] = 0;
 
-	if (input.AnalogY > 150 || input.AnalogY < -150)
-	{
-		player.speed[1] = input.AnalogY / 60000.f;
-		player.position[1] -= player.speed[1];
-		if (WallDetection_player(player.position) || BlockDetection_player(player.position))
+		if (input.AnalogX > 150 || input.AnalogX < -150)
 		{
-			player.position[1] += player.speed[1];
+			player.speed[0] = input.AnalogX / 60000.f;
+			if (!(WallDetection_playerX(player.position) || BlockDetection_playerX(player.position)))
+			{
+				player.position[0] += player.speed[0];
+			}
 		}
+		else player.speed[0] = 0;
+
+		if (input.AnalogY > 150 || input.AnalogY < -150)
+		{
+			player.speed[1] = input.AnalogY / 60000.f;
+			if (!(WallDetection_playerY(player.position) || BlockDetection_playerY(player.position)))
+			{
+				player.position[1] -= player.speed[1];
+			}
+		}
+		else player.speed[1] = 0;
+
+		if (!(player.speed[0] == 0 && player.speed[1] == 0))
+		{
+			playerAngleRad = atan2f(player.speed[0], -player.speed[1]);
+		}
+
+		player.angleRad = playerAngleRad * 180 / M_PI;
+
+		FileGet(player.position);
+
+		break;
 	}
-	else player.speed[1] = 0;
+	
 
-	if (!(player.speed[0] == 0 && player.speed[1] == 0))
-	{
-		playerAngleRad = atan2f(player.speed[0], -player.speed[1]);
-	}
-
-	player.angleRad = playerAngleRad * 180 / M_PI;
-
+	
 
 	glutPostRedisplay(); //display関数の再呼び出し
 	glutTimerFunc(
@@ -73,40 +82,51 @@ void display()
 	glLoadIdentity(); //注文・変換等の初期化　（再描画ごとの重ねがけを無効化できる）
 	//KeyDisp();
 
-	
-	stageDisp();
-	blockDisp();
-	GateDisp();
-
-	if (!(newbullet == nullptr))
+	switch (GameState)
 	{
-		newbullet->move();
-		newbullet->bulletColision();
-		if (newbullet->_is_active == false)
+	case 0:
+		titleDisp();
+		break;
+	case 1:
+		ItemStatusDisp();
+		stageDisp();
+		blockDisp();
+		GateDisp();
+		XFileDisp();
+
+		if (!(newbullet == nullptr))
 		{
-			newbullet = nullptr;
-			delete newbullet;
+			newbullet->move();
+			newbullet->bulletColision();
+			if (newbullet->_is_active == false)
+			{
+				newbullet = nullptr;
+				delete newbullet;
+			}
 		}
-	}
-	enemyDisp();
-	collisionDetection();
+		enemyDisp();
+		collisionDetection();
 
-	if (!(newbullet == nullptr))
-	{
-		newbullet->draw();
-	}
+		if (!(newbullet == nullptr))
+		{
+			newbullet->draw();
+		}
 
-	glPushMatrix();
-	{
+		glPushMatrix();
+		{
+			glTranslatef(player.position[0], player.position[1], player.position[2]);
+			glRotatef(-90, 1, 0, 0);
+			glRotatef(player.angleRad, 0, 1, 0);
+			glColor4f(player.colorStatus[0], player.colorStatus[1], player.colorStatus[2], player.colorStatus[3]);
+			//glutSolidSphere(player.radius, player.slices, player.stacks);
+			glutSolidCone(0.020, 0.050, player.slices, player.stacks);
+		}
+		glPopMatrix();
 
-		glTranslatef(player.position[0], player.position[1], player.position[2]);
-		glRotatef(-90, 1, 0, 0);
-		glRotatef(player.angleRad, 0, 1, 0);
-		glColor4f(player.colorStatus[0], player.colorStatus[1], player.colorStatus[2], player.colorStatus[3]);
-		//glutSolidSphere(player.radius, player.slices, player.stacks);
-		glutSolidCone(0.020, 0.050, player.slices, player.stacks);
+		gameClear(player.position);
+		break;
 	}
-	glPopMatrix();
+	
 
 	glFlush();			//注文したものを持ってくる
 }
@@ -136,6 +156,7 @@ int main(int argc, char *argv[])
 	glutInitWindowSize(
 		640,  // int width
 		640);// int height
+	
 	glutCreateWindow("MILD_GEAR");
 	glutDisplayFunc(display);
 	glutTimerFunc(
